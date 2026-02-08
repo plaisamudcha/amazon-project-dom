@@ -181,6 +181,7 @@ function renderCart() {
     element.addEventListener("click", () => {
       const { productId, deliveryOptionId } = element.dataset;
       updateDeliveryOption(productId, deliveryOptionId);
+      renderCart();
     });
   });
 }
