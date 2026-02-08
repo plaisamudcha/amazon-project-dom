@@ -1,14 +1,15 @@
-export const carts = [
-  {
-    productId: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
-    quantity: 2,
-  },
-  {
-    productId: "15b6fc6f-327a-4ec4-896f-486349e85a3d",
-    quantity: 1,
-  },
-];
+export let carts = JSON.parse(localStorage.getItem("carts"));
 let setTimeoutId;
+
+if (!carts) {
+  carts = [];
+}
+
+export let cartQuantity = carts.reduce((prev, curr) => prev + curr.quantity, 0);
+
+export function saveToStorage() {
+  localStorage.setItem("carts", JSON.stringify(carts));
+}
 
 export function addToCart(productId) {
   const productQuantity = +document.querySelector(
@@ -29,13 +30,15 @@ export function addToCart(productId) {
     carts.push({
       productId,
       quantity: productQuantity,
+      deliveryOptionId: "1",
     });
   }
+
+  saveToStorage();
 }
 
 export function updateCartQuantity(productId) {
-  let cartQuantity = 0;
-
+  cartQuantity = 0;
   carts.forEach((cartItem) => {
     cartQuantity += cartItem.quantity;
   });
@@ -54,6 +57,20 @@ export function updateCartQuantity(productId) {
   document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
 }
 
+export function updateProductQuantity(productId, quantity) {
+  const updateIndex = carts.findIndex(
+    (cartItem) => cartItem.productId === productId,
+  );
+
+  if (updateIndex === -1) {
+    return;
+  }
+
+  carts[updateIndex].quantity = quantity;
+
+  saveToStorage();
+}
+
 export function removeFromCart(productId) {
   const deleteIndex = carts.findIndex(
     (cartItem) => cartItem.productId === productId,
@@ -64,4 +81,6 @@ export function removeFromCart(productId) {
   }
 
   carts.splice(deleteIndex, 1);
+
+  saveToStorage();
 }
