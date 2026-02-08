@@ -27,6 +27,39 @@ function updateCartDisplay() {
     `${displayQuantity} ${itemText}`.trim();
 }
 
+function deliveryOptionHTML(productId, deliveryOptionId) {
+  let html = "";
+
+  deliveryOptions.forEach((deliveryOption) => {
+    const today = dayjs();
+    const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
+    const dateString = deliveryDate.format("dddd, MMMM D");
+    const priceString =
+      deliveryOption.priceCents === 0
+        ? "FREE Shipping"
+        : `${formatCurrency(deliveryOption.priceCents)} - Shipping`;
+
+    const isChecked = deliveryOption.id === deliveryOptionId;
+
+    html += `
+      <div class="delivery-option js-delivery-option" data-product-id="${productId}" data-delivery-option-id="${deliveryOption.id}">
+        <input
+          type="radio"
+          ${isChecked ? "checked" : ""}
+          class="delivery-option-input"
+          name="delivery-option-${productId}"
+        />
+        <div>
+          <div class="delivery-option-date">${dateString}</div>
+          <div class="delivery-option-price">${priceString}</div>
+        </div>
+      </div>
+    `;
+  });
+
+  return html;
+}
+
 export function renderCart() {
   let productCartsHTML = "";
 
@@ -37,13 +70,9 @@ export function renderCart() {
       (product) => product.id === productId,
     );
 
-    let deliveryOption;
-
-    deliveryOptions.forEach((option) => {
-      if (option.id === deliveryOptionId) {
-        deliveryOption = option;
-      }
-    });
+    const deliveryOption = deliveryOptions.find(
+      (option) => option.id === deliveryOptionId,
+    );
 
     const today = dayjs();
     const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
@@ -88,39 +117,6 @@ export function renderCart() {
     `;
   });
 
-  function deliveryOptionHTML(id, deliveryOptionId) {
-    let html = "";
-
-    deliveryOptions.forEach((deliveryOption) => {
-      const today = dayjs();
-      const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
-      const dateString = deliveryDate.format("dddd, MMMM D");
-      const priceString =
-        deliveryOption.priceCents === 0
-          ? "FREE Shipping"
-          : `${formatCurrency(deliveryOption.priceCents)} - Shipping`;
-
-      const isChecked = deliveryOption.id === deliveryOptionId;
-
-      html += `
-        <div class="delivery-option js-delivery-option" data-product-id="${id}" data-delivery-option-id="${deliveryOption.id}">
-          <input
-            type="radio"
-            ${isChecked ? "checked" : ""}
-            class="delivery-option-input"
-            name="delivery-option-${id}"
-          />
-          <div>
-            <div class="delivery-option-date">${dateString}</div>
-            <div class="delivery-option-price">${priceString}</div>
-          </div>
-        </div>
-      `;
-    });
-
-    return html;
-  }
-
   document.querySelector(".js-order-summary").innerHTML = productCartsHTML;
 
   updateCartDisplay();
@@ -131,11 +127,6 @@ export function renderCart() {
 
       removeFromCart(productDeleteId);
 
-      document
-        .querySelector(`.js-cart-item-container-${productDeleteId}`)
-        .remove();
-
-      updateCartDisplay();
       renderCart();
       renderPaymentSummary();
     });
@@ -150,9 +141,6 @@ export function renderCart() {
       );
 
       productContainer.classList.add("is-editing-quantity");
-
-      updateCartDisplay();
-      renderPaymentSummary();
     });
   });
 
@@ -171,15 +159,6 @@ export function renderCart() {
 
       updateProductQuantity(productSaveId, inputValue);
 
-      document.querySelector(`.js-quantity-${productSaveId}`).innerHTML =
-        inputValue;
-
-      const productContainer = document.querySelector(
-        `.js-cart-item-container-${productSaveId}`,
-      );
-      productContainer.classList.remove("is-editing-quantity");
-
-      updateCartDisplay();
       renderCart();
       renderPaymentSummary();
     });
