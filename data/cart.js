@@ -1,8 +1,14 @@
-export let carts = JSON.parse(localStorage.getItem("carts"));
+export let carts;
 let setTimeoutId;
 
-if (!carts) {
-  carts = [];
+loadFromStorage();
+
+export function loadFromStorage() {
+  carts = JSON.parse(localStorage.getItem("carts"));
+
+  if (!carts) {
+    carts = [];
+  }
 }
 
 export let cartQuantity = carts.reduce((prev, curr) => prev + curr.quantity, 0);
@@ -11,11 +17,7 @@ export function saveToStorage() {
   localStorage.setItem("carts", JSON.stringify(carts));
 }
 
-export function addToCart(productId) {
-  const productQuantity = +document.querySelector(
-    `.js-quantity-selector-${productId}`,
-  ).value;
-
+export function addToCart(productId, productQuantity) {
   let matchingItem;
 
   carts.forEach((cartItem) => {
@@ -37,13 +39,12 @@ export function addToCart(productId) {
   saveToStorage();
 }
 
-export function updateCartQuantity(productId) {
+export function updateCartQuantity(textAdded) {
   cartQuantity = 0;
   carts.forEach((cartItem) => {
     cartQuantity += cartItem.quantity;
   });
 
-  const textAdded = document.querySelector(`.js-added-to-cart-${productId}`);
   textAdded.classList.add("show");
 
   if (setTimeoutId) {
