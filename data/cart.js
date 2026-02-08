@@ -84,3 +84,19 @@ export function removeFromCart(productId) {
 
   saveToStorage();
 }
+
+export function updateDeliveryOption(productId, deliveryOptionId) {
+  console.log(productId);
+  console.log(deliveryOptionId);
+  const updateIndex = carts.findIndex(
+    (cartItem) => cartItem.productId === productId,
+  );
+
+  if (updateIndex === -1) {
+    return;
+  }
+
+  carts[updateIndex].deliveryOptionId = deliveryOptionId;
+
+  saveToStorage();
+}
