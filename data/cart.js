@@ -53,3 +53,15 @@ export function updateCartQuantity(productId) {
 
   document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
 }
+
+export function removeFromCart(productId) {
+  const deleteIndex = carts.findIndex(
+    (cartItem) => cartItem.productId === productId,
+  );
+
+  if (deleteIndex === -1) {
+    return;
+  }
+
+  carts.splice(deleteIndex, 1);
+}
