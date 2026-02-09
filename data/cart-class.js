@@ -1,12 +1,11 @@
 class Cart {
-  cartItems = undefined;
-  setTimeoutId = undefined;
-  localStorageKey = undefined;
+  cartItems;
+  #setTimeoutId;
+  #localStorageKey;
 
   constructor(localStorageKey) {
-    this.localStorageKey = localStorageKey;
-
-    this.loadFromStorage();
+    this.#localStorageKey = localStorageKey;
+    this.#loadFromStorage();
   }
 
   cartQuantity() {
@@ -17,8 +16,8 @@ class Cart {
     return 0;
   }
 
-  loadFromStorage() {
-    this.cartItems = JSON.parse(localStorage.getItem(this.localStorageKey));
+  #loadFromStorage() {
+    this.cartItems = JSON.parse(localStorage.getItem(this.#localStorageKey));
 
     if (!this.cartItems) {
       this.cartItems = [];
@@ -26,7 +25,7 @@ class Cart {
   }
 
   saveToStorage() {
-    localStorage.setItem(this.localStorageKey, JSON.stringify(this.cartItems));
+    localStorage.setItem(this.#localStorageKey, JSON.stringify(this.cartItems));
   }
 
   addToCart(productId, productQuantity) {
@@ -59,11 +58,11 @@ class Cart {
 
     textAdded.classList.add("show");
 
-    if (this.setTimeoutId) {
-      clearTimeout(this.setTimeoutId);
+    if (this.#setTimeoutId) {
+      clearTimeout(this.#setTimeoutId);
     }
 
-    this.setTimeoutId = setTimeout(() => {
+    this.#setTimeoutId = setTimeout(() => {
       textAdded.classList.remove("show");
     }, 2000);
 
@@ -115,6 +114,8 @@ class Cart {
 
 const carts = new Cart("cart-oop");
 const businessCarts = new Cart("cart-business");
+
+carts.localStorageKey = "hacked-key";
 
 console.log(carts);
 console.log(businessCarts);
